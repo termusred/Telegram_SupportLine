@@ -45,6 +45,8 @@ import {
 
 const token = process.env.TOKEN;
 
+const deafultAdmin = 1643505035
+
 const bot = new TelegramBot(token , {polling : true});
 const app = express();
 
@@ -104,11 +106,12 @@ bot.on("message" , (msg) => {
     if (waitingForUserInput) {
         if(msg.text != BACK && menu != ADMIN_PANEL){
             bot.sendMessage(msg.chat.id, operatorPendingText);
+            bot.sendMessage(deafultAdmin , `User messsaged : ${msg.text} . On topic : ${command} . Please click on inline button to answer!` )
             waitingForUserInput = false; 
         } else if(menu = ADMIN_PANEL) {
             const password = msg.text   
             if(dbPass == password){
-                bot.sendMessage(msg.chat.id, "Admin");
+                bot.sendMessage(msg.chat.id, "You are now Admin/Operator");
             } else {
                 bot.sendMessage(msg.chat.id, password);
             }
@@ -123,6 +126,7 @@ bot.on("message" , (msg) => {
         menu = MAIN;
         bot.sendMessage(msg.chat.id, greeting);
         bot.sendMessage(msg.chat.id , buttons_reminder ,main_markup);
+        console.log(msg.chat.id)
     }
     if(msg.text === ADMIN) {
         menu = ADMIN_PANEL;
