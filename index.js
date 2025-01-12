@@ -10,7 +10,6 @@ requiredVars.forEach((key) => {
     }
 });
 
-
 import {
     BACK, 
     CONNECT,
@@ -22,14 +21,16 @@ import {
     SOLVED_PROBLEMS,
     START,
     WEBSITE,
-    WEB_ERROR
+    WEB_ERROR,
+    ADMIN
 } from "./constants/commands.js";
 import { 
     MAIN ,
     OPERATOR ,
     TALKING ,
     WEB ,
-    SOLVED
+    SOLVED,
+    ADMIN_PANEL
 } from "./constants/menuOptions.js";
 import { 
     operator_response,
@@ -37,8 +38,9 @@ import {
     solved_response,
     buttons_reminder,
     greeting,
-    finance_response,
-    operatorPendingText
+    operatorPendingText,
+    generic_operator,
+    admin_check
 } from "./constants/response.js";
 
 const token = process.env.TOKEN;
@@ -46,7 +48,9 @@ const token = process.env.TOKEN;
 const bot = new TelegramBot(token , {polling : true});
 const app = express();
 
+let command;
 let menu;
+const dbPass = process.env.PASS || "funnypresident23"
 let waitingForUserInput = false;
 
 const deafult_keyboard = [
@@ -98,15 +102,32 @@ const talking_markup = {
 
 bot.on("message" , (msg) => {
     if (waitingForUserInput) {
-        bot.sendMessage(msg.chat.id, operatorPendingText);
-        waitingForUserInput = false; 
-        return;
+        if(msg.text != BACK && menu != ADMIN_PANEL){
+            bot.sendMessage(msg.chat.id, operatorPendingText);
+            waitingForUserInput = false; 
+        } else if(menu = ADMIN_PANEL) {
+            const password = msg.text   
+            if(dbPass == password){
+                bot.sendMessage(msg.chat.id, "Admin");
+            } else {
+                bot.sendMessage(msg.chat.id, password);
+            }
+            waitingForUserInput = false;
+        } else {
+            bot.sendMessage(msg.chat.id, password);
+            waitingForUserInput = false;
+        }
     }
 
     if(msg.text === START) {
         menu = MAIN;
         bot.sendMessage(msg.chat.id, greeting);
         bot.sendMessage(msg.chat.id , buttons_reminder ,main_markup);
+    }
+    if(msg.text === ADMIN) {
+        menu = ADMIN_PANEL;
+        bot.sendMessage(msg.chat.id, admin_check);
+        waitingForUserInput = true;
     }
     if(msg.text === BACK && !waitingForUserInput){
         if(menu == OPERATOR){
@@ -121,6 +142,11 @@ bot.on("message" , (msg) => {
             menu = MAIN;
             bot.sendMessage(msg.chat.id , buttons_reminder ,main_markup);
         }
+        if(menu == TALKING){
+            menu = OPERATOR;
+            bot.sendMessage(msg.chat.id, operator_response);
+            bot.sendMessage(msg.chat.id, buttons_reminder ,operator_markup);
+        }
     }
     //operator
     if(msg.text === CONNECT && menu == MAIN){
@@ -130,7 +156,34 @@ bot.on("message" , (msg) => {
     }
     if(msg.text === FINANCE && menu == OPERATOR){
         menu = TALKING;
-        bot.sendMessage(msg.chat.id, finance_response , talking_markup);
+        command = FINANCE;
+
+        const redirectMessage = generic_operator(command)
+        bot.sendMessage(msg.chat.id, redirectMessage , talking_markup);
+        waitingForUserInput = true;
+    }
+    if(msg.text === PRODUCT_CONSULT && menu == OPERATOR){
+        menu = TALKING;
+        command = PRODUCT_CONSULT;
+
+        const redirectMessage = generic_operator(command)
+        bot.sendMessage(msg.chat.id, redirectMessage , talking_markup);
+        waitingForUserInput = true;
+    }
+    if(msg.text === DELIVERY && menu == OPERATOR){
+        menu = TALKING;
+        command = DELIVERY;
+
+        const redirectMessage = generic_operator(command)
+        bot.sendMessage(msg.chat.id, redirectMessage , talking_markup);
+        waitingForUserInput = true;
+    }
+    if(msg.text === QUALITY && menu == OPERATOR){
+        menu = TALKING;
+        command = QUALITY;
+
+        const redirectMessage = generic_operator(command)
+        bot.sendMessage(msg.chat.id, redirectMessage , talking_markup);
         waitingForUserInput = true;
     }
 
