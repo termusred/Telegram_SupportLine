@@ -1,0 +1,5 @@
+export const MAIN = "main"
+export const OPERATOR = "operator"
+export const WEB = "Web"
+export const TALKING = "talking"
+export const SOLVED = "solved"

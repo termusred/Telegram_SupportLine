@@ -1,0 +1,28 @@
+# Node.js
+node_modules/
+
+# Logs
+*.log
+logs/
+
+# Environment files
+.env
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# npm package-lock files
+package-lock.json
+
+# Editor directories and files
+.vscode/
+.idea/
+
+# Build directories
+/dist
+/build
+
+# Optional: if you're using any test directories
+/test
